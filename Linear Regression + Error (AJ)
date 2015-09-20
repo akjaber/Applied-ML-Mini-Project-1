@@ -1,0 +1,63 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Sep 19 23:04:51 2015
+
+@author: Abdul.Jaber
+"""
+
+#%%
+
+# Part 1: Importing Data from OnlineNewsPopularity.CSV 
+#         and organize data into Matrix using numpy.array
+import numpy as np
+
+
+
+csv_data = np.genfromtxt('OnlineNewsPopularity.csv', delimiter=',')
+
+
+raw_data = csv_data[1:39645, 2:60]
+
+training_set = raw_data[0:20000, 0:58]
+test_set = raw_data[20001:, :]
+
+
+
+#%%
+# Part 2: Linear Regression
+
+#append a column of 1s to account for bias weight
+
+from numpy.linalg import inv
+
+bias_vector_training_set = np.ones((20000,1)) 
+X = np.concatenate((training_set,bias_vector_training_set), axis = 1)
+
+Y = csv_data[1:20001, 60]
+
+XT = np.transpose(X)
+
+XTX = np.dot(XT,X)
+
+XTXinv = inv(XTX)
+
+XTY = np.dot(XT, Y) 
+
+W = np.dot(XTXinv, XTY)
+
+Yfitted = np.dot(X,W)
+
+bias_vector_test_set = np.ones((19643,1))
+
+Xnew = np.concatenate((test_set,bias_vector_test_set), axis = 1)
+
+Ypredict = np.dot(Xnew, W)
+Ytest = csv_data[20002:39645,60]
+
+Err = np.sum((Ypredict - Ytest)**2)
+
+ErrArray = Ypredict - Ytest
+
+RelErr = Err / 19643
+
+#%%
